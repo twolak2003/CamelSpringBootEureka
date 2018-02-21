@@ -2,8 +2,6 @@
 package hello;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,8 +22,7 @@ import org.springframework.context.annotation.Configuration;
 public class RouteConfingFromRestToRestViaProcessor {
 
 
-    @Autowired
-    DiscoveryClient discClient;
+
 
     @Bean(name = "routeBuilder")
     public RouteBuilder route() {
@@ -35,7 +32,7 @@ public class RouteConfingFromRestToRestViaProcessor {
             public void configure() throws Exception {
 
                 from("direct:callMe")
-                .serviceCall().name("EUREKACLIENT").serviceDiscovery("discClient")
+                .serviceCall().name("EUREKACLIENT")
                 .expression()
                 .simple("http4:${header.CamelServiceCallServiceHost}:${header.CamelServiceCallServicePort}/ack").end();
             }
