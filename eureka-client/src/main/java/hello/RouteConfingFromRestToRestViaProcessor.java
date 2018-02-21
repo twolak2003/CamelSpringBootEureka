@@ -1,7 +1,16 @@
 
 package hello;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.cloud.ServiceDefinition;
+import org.apache.camel.cloud.ServiceDiscovery;
+import org.apache.camel.impl.cloud.DefaultServiceDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,8 +30,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RouteConfingFromRestToRestViaProcessor {
 
+    @Autowired
+    DiscoveryClient client;
 
-
+    @Bean
+    public ServiceDiscovery getServiceDiscovery(){
+        ServiceDiscovery serviceDiscovery = new ServiceDiscovery() {
+            @Override
+            public List<ServiceDefinition> getServices(String name) {
+                List<ServiceInstance> instances = client.getInstances(name);
+                List<ServiceDefinition> defintions = new ArrayList<ServiceDefinition>();
+                for(ServiceInstance sI: instances){
+                    DefaultServiceDefinition aDef = new DefaultServiceDefinition(name, sI.getHost(), sI.getPort());
+                    defintions.add(aDef);
+                }
+                return defintions;
+            }
+        };
+        return serviceDiscovery;
+    }
 
     @Bean(name = "routeBuilder")
     public RouteBuilder route() {
@@ -30,9 +56,9 @@ public class RouteConfingFromRestToRestViaProcessor {
 
             @Override
             public void configure() throws Exception {
-
                 from("direct:callMe")
-                .serviceCall().name("EUREKACLIENT")
+                .   serviceCall().ribbonLoadBalancer().serviceDiscovery(getServiceDiscovery())
+                .    name("EUREKACLIENT")
                 .expression()
                 .simple("http4:${header.CamelServiceCallServiceHost}:${header.CamelServiceCallServicePort}/ack").end();
             }
