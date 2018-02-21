@@ -41,8 +41,8 @@ dependencies {
 	  //camel dependencies
     compile("org.apache.camel:camel-spring-boot-starter:2.20.1")
     compile("org.apache.camel:camel-http4-starter:2.20.1")
- 	compile("org.apache.camel:camel-spring-cloud:2.20.1")
- 	//compile("org.apache.camel:camel-ribbon:2.20.1")
+ 	//compile("org.apache.camel:camel-spring-cloud:2.20.1")
+ 	compile("org.apache.camel:camel-ribbon:2.20.1")
 }
 
 repositories {
