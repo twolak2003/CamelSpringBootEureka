@@ -50,9 +50,10 @@ class ServiceInstanceRestController {
 
     }
 
-    @PostMapping(value = "/ack", produces = { "application/json" })
+    @PostMapping(value = "/ack")
     public String ack(@RequestBody String inputToBeAcked) {
         System.out.println("Message acknowleged ok:" + inputToBeAcked);
-        return "Acking: "+inputToBeAcked;
+        return "{\"AckingBack\":\""+inputToBeAcked+"\"}";
+
     }
 }
